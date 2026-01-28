@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.billiontests.app.home.ui.home.HomeFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_navigation_home_to_testGuideFragment2"
+            app:destination="@id/testGuideFragment2" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_dashboard"
+        android:name="com.billiontests.app.home.ui.dashboard.DashboardFragment"
+        android:label="@string/title_dashboard"
+        tools:layout="@layout/fragment_dashboard" >
+        <action
+            android:id="@+id/action_navigation_dashboard_to_testGuideFragment2"
+            app:destination="@id/testGuideFragment2" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_notifications"
+        android:name="com.billiontests.app.home.ui.notifications.SupportFragment"
+        android:label="@string/title_notifications"
+        tools:layout="@layout/fragment_support" />
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.billiontests.app.home.ui.profile.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_navigation_profile_to_testGuideFragment2"
+            app:destination="@id/testGuideFragment2" />
+        <action
+            android:id="@+id/action_navigation_profile_to_aboutFragment"
+            app:destination="@id/aboutFragment" />
+        <action
+            android:id="@+id/action_navigation_profile_to_webViewFragment"
+            app:destination="@id/webViewFragment" />
+        <action
+            android:id="@+id/action_navigation_profile_to_signUpFragment2"
+            app:destination="@id/signUpFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/testGuideFragment2"
+        android:name="com.billiontests.app.testguide.TestGuideFragment"
+        android:label="fragment_test_guide"
+        tools:layout="@layout/fragment_test_guide" />
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.billiontests.app.home.ui.profile.AboutFragment"
+        android:label="fragment_about"
+        tools:layout="@layout/fragment_about" />
+    <fragment
+        android:id="@+id/webViewFragment"
+        android:name="com.billiontests.app.home.ui.WebViewFragment"
+        android:label="fragment_web_view"
+        tools:layout="@layout/fragment_web_view" >
+        <argument
+            android:name="url"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/signUpFragment2"
+        android:name="com.billiontests.app.authentication.signup.SignUpFragment"
+        android:label="SignUpFragment" >
+        <argument
+            android:name="isProfile"
+            app:argType="boolean" />
+    </fragment>
+</navigation>

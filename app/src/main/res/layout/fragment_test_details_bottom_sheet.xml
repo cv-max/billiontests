@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:divider="@android:color/transparent"
+        android:showDividers="middle"
+        android:dividerPadding="8dp">
+
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Leukocyte Esterase (LEU)"
+            android:textStyle="bold"
+            android:textSize="18sp"/>
+
+        <TextView
+            android:id="@+id/tvResultBig"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Negative"
+            android:textStyle="bold"
+            android:textSize="24sp"
+            android:layout_marginTop="12dp"/>
+
+        <TextView
+            android:id="@+id/tvRefRange"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ref. range: Negative"
+            android:textColor="@color/black"
+            android:layout_marginTop="2dp"/>
+
+        <!-- Meaning -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="What it means"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/tvMeaning"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Detects white blood cells; negative suggests no UTI/inflammation."/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- When to act -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="When to re-test / see doctor"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/tvWhenToAct"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="If symptomatic (burning urine, fever) or if positive persists."/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Confounders -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Things that can skew the result"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/tvConfounders"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Improper sample collection, contamination, some medications."/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+</ScrollView>
+

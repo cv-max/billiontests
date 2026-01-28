@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".testguide.TestGuideFragment">
+
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/player_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintDimensionRatio="4:3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout5"
+        app:resize_mode="fill"
+        app:show_buffering="when_playing"
+        app:show_shuffle_button="false"
+        app:use_controller="false">
+
+    </androidx.media3.ui.PlayerView>
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/grey"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/select_strip_type"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:textSize="18sp"
+            android:layout_marginStart="24dp"
+            android:fontFamily="@font/alata"
+            android:textColor="@color/black" />
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
+            android:background="@drawable/spinner_background_with_arrow"
+            android:spinnerMode="dropdown"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/simple_process"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:gravity="center_vertical"
+            android:layout_marginStart="32dp"
+            android:fontFamily="@font/alata"
+            android:textColor="@color/black"
+            android:textSize="18sp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:gravity="center_vertical"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/alata"
+            android:text="@string/scan_instruction"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/start_scan_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="48dp"
+            android:background="@drawable/gradient_purple_bg"
+            android:fontFamily="@font/open_sans_bold"
+            android:text="@string/start_scan"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:backgroundTint="@null" />
+
+        <Button
+            android:id="@+id/start_force_scan_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            android:visibility="gone"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/outline_button_bg"
+            android:fontFamily="@font/open_sans_bold"
+            android:text="Start Now"
+            android:textAllCaps="false"
+            android:textColor="@color/dark_blue"
+            android:textSize="16sp"
+            app:backgroundTint="@null" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout5"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@color/grey"
+        android:padding="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/instruction_tv"
+            style="@style/TextAppearance.MaterialComponents.Headline5"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_weight="3"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/alata"
+            android:text="@string/home_to_scan"
+            android:textColor="@color/black" />
+
+        <ImageView
+            android:id="@+id/play_again_button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="32dp"
+            android:src="@drawable/outline_replay_24" />
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/timer_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/open_sans_bold"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout5"
+        tools:text="60" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="4dp"
+        android:indeterminate="false"
+        android:visibility="gone"
+        android:progress="0"
+        android:progressDrawable="@drawable/circular_progress"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

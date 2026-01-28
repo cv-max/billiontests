@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "531878707472",
+    "project_id": "billiontestsmobileapp",
+    "storage_bucket": "billiontestsmobileapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:531878707472:android:14fa6225a0d659c5ffe595",
+        "android_client_info": {
+          "package_name": "com.billiontests.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBIU7KsfLeH_cP1t6NjlrGmgQF7Huo8oY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

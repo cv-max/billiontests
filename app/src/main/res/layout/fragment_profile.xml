@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/grey"
+    tools:context=".home.ui.profile.ProfileFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <LinearLayout
+            android:id="@+id/profile_app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@drawable/gradient_blue_light_bg"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="32dp"
+                android:src="@drawable/man" />
+
+            <TextView
+                android:id="@+id/profile_user_name_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/alata"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_anchor="@id/profile_app_bar"
+        android:background="@drawable/gradient_white_grey"
+        app:layout_constraintBottom_toBottomOf="@+id/profile_app_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_app_bar">
+
+        <TextView
+            android:id="@+id/textView35"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/last_test_taken"
+            android:textAllCaps="true"
+            android:textColor="@color/darker_purple"
+            android:fontFamily="@font/alata"
+            app:layout_constraintEnd_toStartOf="@+id/textView34"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView34"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/age"
+            android:textAllCaps="true"
+            android:textColor="@color/darker_purple"
+            android:fontFamily="@font/alata"
+            app:layout_constraintEnd_toStartOf="@+id/textView33"
+            app:layout_constraintStart_toEndOf="@+id/textView35"
+            app:layout_constraintTop_toTopOf="@+id/textView35" />
+
+        <TextView
+            android:id="@+id/textView33"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gender"
+            android:textAllCaps="true"
+            android:textColor="@color/darker_purple"
+            android:fontFamily="@font/alata"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textView34"
+            app:layout_constraintTop_toTopOf="@+id/textView34" />
+
+        <TextView
+            android:id="@+id/gender_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="_ _ _"
+            android:textAllCaps="true"
+            android:textColor="@color/black"
+            android:fontFamily="@font/alata"
+            app:layout_constraintBottom_toBottomOf="@+id/last_test_taken_tv"
+            app:layout_constraintEnd_toEndOf="@+id/textView33"
+            app:layout_constraintStart_toStartOf="@+id/textView33"
+            app:layout_constraintTop_toBottomOf="@+id/textView33" />
+
+        <TextView
+            android:id="@+id/age_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="_ _ _"
+            android:textAllCaps="true"
+            android:textColor="@color/black"
+            android:fontFamily="@font/alata"
+            app:layout_constraintBottom_toBottomOf="@+id/last_test_taken_tv"
+            app:layout_constraintEnd_toEndOf="@+id/textView34"
+            app:layout_constraintStart_toStartOf="@+id/textView34"
+            app:layout_constraintTop_toBottomOf="@+id/textView34" />
+
+        <TextView
+            android:id="@+id/last_test_taken_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:text="_ _ _"
+            android:textAllCaps="true"
+            android:textColor="@color/black"
+            android:fontFamily="@font/alata"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/textView35"
+            app:layout_constraintStart_toStartOf="@+id/textView35"
+            app:layout_constraintTop_toBottomOf="@+id/textView35" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout3">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="24dp"
+                android:visibility="gone"
+                app:cardElevation="8dp"
+                app:cardUseCompatPadding="true">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/test_status_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_marginEnd="16dp"
+                        android:gravity="center"
+                        android:text="100"
+                        android:textColor="@color/light_green"
+                        android:textSize="32sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="@+id/test_status_des"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/test_status_text_tv" />
+
+                    <TextView
+                        android:id="@+id/test_status_text_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="24dp"
+                        android:drawablePadding="8dp"
+                        android:fontFamily="@font/alata"
+                        android:text="@string/great"
+                        android:textColor="@color/light_green"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:drawableEndCompat="@drawable/baseline_celebration_24"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/test_status_des"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="32dp"
+                        android:fontFamily="@font/alata"
+                        android:text="@string/you_are_healthier_as_compared_to_last_test"
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        app:layout_constraintEnd_toStartOf="@+id/test_status_tv"
+                        app:layout_constraintStart_toStartOf="@+id/test_status_text_tv"
+                        app:layout_constraintTop_toBottomOf="@+id/test_status_text_tv" />
+
+                    <Button
+                        android:id="@+id/take_test_result_button"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:background="@drawable/gradien_mat_blue_bg"
+                        android:drawableEnd="@drawable/baseline_navigate_next_24"
+                        android:padding="16dp"
+                        android:text="@string/view_past_results"
+                        android:textAlignment="viewStart"
+                        android:textAllCaps="false"
+                        android:textStyle="bold"
+                        app:backgroundTint="@null"
+                        app:cornerRadius="12dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/test_status_des" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <Button
+                android:id="@+id/take_test_now_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:textColor="@color/white"
+                android:background="@drawable/gradient_purple_bg"
+                android:drawableEnd="@drawable/baseline_navigate_next_24"
+                android:padding="12dp"
+                android:text="@string/take_test_now"
+                android:textAlignment="viewStart"
+                android:textAllCaps="false"
+                android:textStyle="bold"
+                app:backgroundTint="@null"
+                app:cornerRadius="12dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/test_status_des" />
+
+
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/profile_recyclerView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/gradient_white_grey"
+            android:paddingTop="16dp"
+            android:paddingBottom="60dp"
+            android:nestedScrollingEnabled="false"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout4"
+            tools:itemCount="10"
+            tools:listitem="@layout/profile_list_item" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

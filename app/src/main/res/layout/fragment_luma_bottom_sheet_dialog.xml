@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".scan.LumaBottomSheetDialogFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Distance"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center_horizontal"
+            android:paddingBottom="8dp"/>
+
+        <!-- Lower -->
+        <EditText
+            android:id="@+id/etLower"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Min"
+            android:inputType="number"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"/>
+
+        <!-- Upper -->
+        <EditText
+            android:id="@+id/etUpper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Max"
+            android:inputType="number"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"/>
+
+        <!-- Save button -->
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            android:layout_marginTop="16dp"/>
+
+    </LinearLayout>
+
+</FrameLayout>

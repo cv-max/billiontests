@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/layout/overlay_view.xml -->
+<RelativeLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@color/black"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Dotted Outline -->
+    <View
+        android:id="@+id/dottedOutline"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="80dp"
+        android:layout_marginRight="80dp"
+        android:background="@drawable/dotted_border"
+        android:layout_centerHorizontal="true" />
+
+    <!-- Capture Button -->
+    <Button
+        android:id="@+id/captureButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Capture The Card"
+        android:layout_below="@id/dottedOutline"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/rounded_button_background"
+        android:layout_marginTop="20dp" />
+
+    <!-- Instruction Text -->
+    <TextView
+        android:id="@+id/instructions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Capture the Image\nPlease align your test card with the given dotted outline!"
+        android:textColor="@android:color/white"
+        android:layout_above="@id/dottedOutline"
+        android:layout_centerHorizontal="true"
+        android:textSize="16sp"
+        android:textAlignment="center"
+        android:padding="8dp"
+        android:background="@drawable/rounded_background" />
+
+    <!-- Rotation angle or other indicators (optional) -->
+    <TextView
+        android:id="@+id/rotationText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0°"
+        android:textColor="@android:color/white"
+        android:layout_below="@id/captureButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:textSize="18sp" />
+</RelativeLayout>

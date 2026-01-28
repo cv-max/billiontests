@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- The main background (your existing drawable) -->
+    <item android:drawable="@drawable/outline_button_bg" />
+
+    <!-- The dropdown arrow -->
+    <item
+        android:drawable="@drawable/outline_arrow_drop_down_24"
+        android:gravity="end|center_vertical"
+        android:right="12dp" /> <!-- Adjust padding from right as needed -->
+</layer-list>

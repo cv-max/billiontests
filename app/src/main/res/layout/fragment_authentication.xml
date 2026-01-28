@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_blue_top_to_bottom"
+    tools:context=".authentication.auth.AuthenticationFragment">
+
+
+    <TextView
+        android:id="@+id/profile_head_tv"
+        style="@style/TextAppearance.MaterialComponents.Headline4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginEnd="24dp"
+        android:fontFamily="@font/open_sans_bold"
+        android:text="@string/measure_what_nmatters"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/white_top_rounded_bg">
+
+
+        <TextView
+            android:id="@+id/privacy_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="32dp"
+            android:fontFamily="@font/open_sans"
+            android:gravity="center"
+            android:text="@string/privacy_policy"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/continue_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/gradient_blue_black_bg"
+            android:fontFamily="@font/open_sans_bold"
+            android:text="@string/continuee"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:backgroundTint="@null"
+            app:layout_constraintBottom_toTopOf="@+id/privacy_tv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
+        <EditText
+            android:id="@+id/phone_number_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="32dp"
+            android:inputType="phone"
+            android:maxEms="10"
+            android:maxLength="10"
+            android:maxLines="1"
+            android:paddingStart="2dp"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:backgroundTint="@color/black"
+            app:layout_constraintBottom_toTopOf="@+id/continue_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textView" />
+
+        <TextView
+            style="@style/TextAppearance.MaterialComponents.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="42dp"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/open_sans_bold"
+            android:text="@string/phone_number"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toTopOf="@id/phone_number_edit_text"
+            app:layout_constraintStart_toStartOf="@+id/phone_number_edit_text"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="24dp"
+            android:gravity="bottom"
+            android:paddingBottom="10dp"
+            android:text="+91"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/phone_number_edit_text"
+            app:layout_constraintEnd_toStartOf="@+id/phone_number_edit_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/phone_number_edit_text"
+            app:layout_constraintVertical_bias="0.545" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
