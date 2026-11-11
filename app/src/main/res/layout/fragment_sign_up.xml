@@ -53,7 +53,29 @@
                 android:textColor="@color/black" />
         </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Button for Date of Birth -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutEmail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="24dp"
+            app:hintTextColor="@color/grey"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayoutName">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textInputEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Email"
+                android:inputType="textEmailAddress"
+                android:maxLines="1"
+                android:textColor="@color/black" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Button for Date of Birth -->
         <Button
             android:id="@+id/btnSelectDOB"
             android:layout_width="wrap_content"
@@ -135,7 +157,7 @@
             android:id="@+id/dob_editText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:ems="10"
             android:enabled="false"
@@ -145,7 +167,7 @@
             android:textColorHint="@color/grey"
             app:layout_constraintEnd_toStartOf="@+id/btnSelectDOB"
             app:layout_constraintStart_toStartOf="@+id/textInputLayoutName"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayoutName" />
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayoutEmail" />
 
         <TextView
             android:id="@+id/textView37"

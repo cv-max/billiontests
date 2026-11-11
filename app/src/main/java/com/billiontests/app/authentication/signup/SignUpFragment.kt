@@ -20,6 +20,7 @@ import com.billiontests.app.utils.PreferenceUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import java.util.Calendar
 
 class SignUpFragment : Fragment() {
@@ -67,8 +68,18 @@ class SignUpFragment : Fragment() {
                 Toast.makeText(requireContext(), "Enter Name", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+            val email = binding.textInputEmail.text.toString()
+            if (email.isEmpty()) {
+                Toast.makeText(requireContext(), "Enter Email", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                Toast.makeText(requireContext(), "Enter Valid Email", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             selectedGender = getSelectedGender()
-            if (selectedGender.isNullOrEmpty()) {
+            if (selectedGender.isEmpty()) {
                 Toast.makeText(requireContext(), "Select Gender", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -82,8 +93,18 @@ class SignUpFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            saveUserData(name, selectedDOB!!, selectedAge!!, selectedGender!!)
+            saveUserData(name,email, selectedDOB!!, selectedAge!!, selectedGender!!)
             // Now you can submit name, selectedDOB, selectedAge, and selectedGender to Firebase
+        }
+
+        // Prefill email for email/password sign-ups so the user doesn't type it twice.
+        // Phone users have no account email, so this is a no-op for them.
+        if (!isProfile && binding.textInputEmail.text.isNullOrEmpty()) {
+            FirebaseAuth.getInstance().currentUser?.email?.let { accountEmail ->
+                if (accountEmail.isNotEmpty()) {
+                    binding.textInputEmail.setText(accountEmail)
+                }
+            }
         }
 
         return binding.root
@@ -95,7 +116,7 @@ class SignUpFragment : Fragment() {
 //        saveUserData("harsha","28/03/1996",28,"male")
     }
 
-    private fun saveUserData(name: String, dob: String, age: Int, gender: String) {
+    private fun saveUserData(name: String, email: String, dob: String, age: Int, gender: String) {
 
         binding.btnSubmit.visibility = View.GONE
         binding.signupProgressbar.visibility = View.VISIBLE
@@ -103,16 +124,32 @@ class SignUpFragment : Fragment() {
             requireContext().getSharedPreferences(PreferenceUtils.PREFERENCE_NAME, MODE_PRIVATE)
 
         val phoneNumber = sharedPreferences.getString(PreferenceUtils.PHONE_NUMBER, "") ?: ""
-        val user = User(name, dob, age, gender, phoneNumber)
+        val user = User(name, dob, age, gender, phoneNumber,email)
 
         // Get current user's UID from FirebaseAuth
         val currentUser = FirebaseAuth.getInstance().currentUser
         val uid = currentUser?.uid
 
         if (uid != null) {
-            // Add user data to Firestore under the "users" collection with UID as the document key
-            db.collection("users").document(uid)
-                .set(user)
+            // Add user data to Firestore under the "users" collection with UID as the document key.
+            val docRef = db.collection("users").document(uid)
+            val writeTask = if (isProfile) {
+                // Profile update: merge so the scan counter (and any server-only fields) survive.
+                docRef.set(user, SetOptions.merge())
+            } else {
+                // New sign-up: store profile and initialize the scan counter used by the scan limit.
+                val data = hashMapOf(
+                    "name" to name,
+                    "dob" to dob,
+                    "age" to age,
+                    "gender" to gender,
+                    "phoneNumber" to phoneNumber,
+                    "email" to email,
+                    "scanCount" to 0L
+                )
+                docRef.set(data)
+            }
+            writeTask
                 .addOnSuccessListener {
                     // Handle successful write
                     Log.d("Firestore", "User data added successfully")

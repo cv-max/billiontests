@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.billiontests.app.R
 import com.billiontests.app.databinding.ItemScanResultBinding
 import com.billiontests.app.model.ScanResult
+import com.billiontests.app.utils.formatTimestamp
 import com.bumptech.glide.Glide
 
 class ScanResultAdapter(private val scanResults: List<ScanResult>, private val clickListener: OnScannedItemClickListener) :
@@ -21,7 +22,7 @@ class ScanResultAdapter(private val scanResults: List<ScanResult>, private val c
         RecyclerView.ViewHolder(binding.root) {
         fun bind(scanResult: ScanResult, position: Int) {
             binding.scanIdTextView.text =  scanResult.scanId
-            binding.dateTextView.text = scanResult.date.toString()
+            binding.dateTextView.text = formatTimestamp(scanResult.timeStamp, "dd/MM/yyyy hh:mm a")
             binding.statusTextView.text = scanResult.status.capitalize()
             binding.statusTextView.setTextColor(
                 if (scanResult.status == "success") ContextCompat.getColor(

@@ -140,6 +140,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:layout_marginBottom="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/constraintLayout3">
@@ -234,7 +235,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="32dp"
                 android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
                 android:textColor="@color/white"
                 android:background="@drawable/gradient_purple_bg"
                 android:drawableEnd="@drawable/baseline_navigate_next_24"
@@ -251,6 +251,25 @@
                 app:layout_constraintTop_toBottomOf="@+id/test_status_des" />
 
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/select_strip_type"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp"
+                android:textSize="18sp"
+                android:layout_marginStart="24dp"
+                android:fontFamily="@font/alata"
+                android:textColor="@color/black" />
+            <Spinner
+                android:id="@+id/spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/spinner_background_with_arrow"
+                android:spinnerMode="dropdown"/>
 
         </LinearLayout>
 
@@ -271,6 +290,21 @@
             app:layout_constraintTop_toBottomOf="@+id/linearLayout4"
             tools:itemCount="10"
             tools:listitem="@layout/profile_list_item" />
+
+        <TextView
+            android:id="@+id/app_version_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="24dp"
+            android:fontFamily="@font/alata"
+            android:textColor="@color/darker_purple"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profile_recyclerView"
+            tools:text="Version 2.1.6" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

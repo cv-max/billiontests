@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
-import java.util.*
 
 @Parcelize
 @Entity(tableName = "scan_results")
@@ -30,7 +29,11 @@ data class ScanResult(
     var isUploaded: Boolean = false,
     var isImageUploaded: Boolean = false,
     var isMission: Boolean = false,
-    var pdfPath: String = ""
+    var pdfPath: String = "",
+    val patient: Patient,
+    var volume: String = "",
+    var colorM: String = "",
+    var appearance: String = ""
 ) : Parcelable
 
 fun ScanResult.toImageAnalysisResponse(): ImageAnalysisResponse {
@@ -73,7 +76,7 @@ fun ScanResult.toHashMap(): HashMap<String, Any> {
         "scannedImage" to scannedImage,
         "BIL" to BIL,
         "Color" to Color,
-        "BLO"  to BLO,
+        "BLO" to BLO,
         "ERY" to ERY,
         "GLU" to GLU,
         "KET" to KET,
@@ -85,3 +88,10 @@ fun ScanResult.toHashMap(): HashMap<String, Any> {
         "pH" to pH
     )
 }
+
+@Parcelize
+data class ScanMetaData(
+    val volume: String = "",
+    val color: String = "",
+    val appearance: String = ""
+) : Parcelable

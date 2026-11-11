@@ -3,6 +3,7 @@ package com.billiontests.app.home
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Insets
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
@@ -48,17 +49,18 @@ class BottomHomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+//        enableEdgeToEdge()
         binding = ActivityBottomHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.container) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-
-            // Apply top padding to the container to avoid status bar overlap
-            v.updatePadding(top = systemBars.top)
-            insets
-        }
+        setupEdgeToEdge()
+//        ViewCompat.setOnApplyWindowInsetsListener(binding.container) { v, insets ->
+//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+//
+//            // Apply top padding to the container to avoid status bar overlap
+//            v.updatePadding(top = systemBars.top)
+//
+//            insets
+//        }
         remoteConfig.setConfigSettingsAsync(configSettings)
         remoteConfig.setDefaultsAsync(R.xml.remote_config_defaults)
         val navView: BottomNavigationView = binding.navView
@@ -86,7 +88,12 @@ class BottomHomeActivity : AppCompatActivity() {
                     // Show the BottomNavigationView for these fragments
                     navView.visibility = View.VISIBLE
                     binding.bottomAppBar.visibility = View.VISIBLE
-                    params.setMargins(0, 0, 0, 56)
+                    // Reserve exactly the bar's real height (includes its nav-bar inset padding)
+                    // instead of a hardcoded 90dp, which left a grey band when they didn't match.
+                    binding.bottomAppBar.post {
+                        params.setMargins(0, 0, 0, binding.bottomAppBar.height)
+                        wrapperView.layoutParams = params
+                    }
                 }
 
                 else -> {
@@ -94,6 +101,7 @@ class BottomHomeActivity : AppCompatActivity() {
                     navView.visibility = View.GONE
                     binding.bottomAppBar.visibility = View.GONE
                     params.setMargins(0, 0, 0, 0)
+                    wrapperView.layoutParams = params
 
                 }
             }
@@ -119,6 +127,9 @@ class BottomHomeActivity : AppCompatActivity() {
         networkConnectionLiveData = NetworkConnectionLiveData(this)
     }
 
+    private fun Int.dp(): Int =
+        (this * resources.displayMetrics.density).toInt()
+
     private fun getAppVersion(context: Context): String {
         var result = ""
         try {
@@ -133,13 +144,13 @@ class BottomHomeActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        networkConnectionLiveData.observe(this, Observer { isConnected ->
-            isInternetAvailable = isConnected
-            Log.e("Internet", "is internet available: $isConnected")
-            if (isConnected.not()) {
-                showNoInternetDialog()
-            }
-        })
+//        networkConnectionLiveData.observe(this, Observer { isConnected ->
+//            isInternetAvailable = isConnected
+//            Log.e("Internet", "is internet available: $isConnected")
+//            if (isConnected.not()) {
+//                showNoInternetDialog()
+//            }
+//        })
     }
 
     private fun showNoInternetDialog() {
@@ -199,5 +210,67 @@ class BottomHomeActivity : AppCompatActivity() {
 //            // Handle the case where no app can handle the URL
 //            Toast.makeText(this, "No application available to open the URL", Toast.LENGTH_SHORT).show()
 //        }
+    }
+
+    private fun setupEdgeToEdge() {
+        val containerInitialPadding = InitialPadding(binding.container)
+        val bottomBarInitialPadding = InitialPadding(binding.bottomAppBar)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, windowInsets ->
+            val systemBars = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val displayCutout = windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout())
+
+            val safeInsets = Insets.of(
+                maxOf(systemBars.left, displayCutout.left),
+                maxOf(systemBars.top, displayCutout.top),
+                maxOf(systemBars.right, displayCutout.right),
+                maxOf(systemBars.bottom, displayCutout.bottom)
+            )
+
+            // Keep screen content below the status bar and display cutout.
+            binding.container.updatePadding(
+                left = containerInitialPadding.left + safeInsets.left,
+                top = containerInitialPadding.top + safeInsets.top,
+                right = containerInitialPadding.right + safeInsets.right,
+                bottom = containerInitialPadding.bottom
+            )
+
+            // Keep bottom navigation content above the gesture/navigation area
+            // while allowing its background to draw behind that area.
+            // NOTE: Material BottomAppBar already applies the bottom system-bar inset as
+            // padding itself, so we must NOT add safeInsets.bottom here — doing so double-
+            // counts the nav-bar height and leaves a large empty band under the bar.
+            binding.bottomAppBar.updatePadding(
+                left = bottomBarInitialPadding.left + safeInsets.left,
+                top = bottomBarInitialPadding.top,
+                right = bottomBarInitialPadding.right + safeInsets.right,
+//                bottom = bottomBarInitialPadding.bottom
+            )
+
+            windowInsets
+        }
+
+        // The inner BottomNavigationView (a Material NavigationBarView) also applies the
+        // bottom system-bar inset as padding by default. Combined with the BottomAppBar
+        // applying it too, this double-counts the nav-bar height and leaves an empty band
+        // under the nav icons (more visible on devices with a larger gesture inset).
+        // Replace its inset listener with a no-op so only the BottomAppBar handles it.
+        ViewCompat.setOnApplyWindowInsetsListener(binding.navView) { _, insets -> insets }
+
+        ViewCompat.requestApplyInsets(binding.root)
+    }
+
+    private data class InitialPadding(
+        val left: Int,
+        val top: Int,
+        val right: Int,
+        val bottom: Int
+    ) {
+        constructor(view: View) : this(
+            left = view.paddingLeft,
+            top = view.paddingTop,
+            right = view.paddingRight,
+            bottom = view.paddingBottom
+        )
     }
 }

@@ -5,12 +5,16 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.billiontests.app.model.Patient
 import com.billiontests.app.model.ScanResult
+import com.billiontests.app.model.TypeConverter
+import org.opencv.utils.Converters
 
-@Database(entities = [ScanResult::class], version = 9, exportSchema = false)
+@Database(entities = [ScanResult::class, Patient::class], version = 11, exportSchema = false)
+@TypeConverters(TypeConverter::class)
 abstract class ScanDatabase : RoomDatabase() {
     abstract fun scanResultDao(): ScanResultDao
-
+    abstract fun patientDao(): PatientDao
     companion object {
         @Volatile
         private var INSTANCE: ScanDatabase? = null

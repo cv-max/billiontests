@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Billion Tests</string>
+    <string name="version_format">Version %1$s</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="next">Next</string>
     <string name="skip">Skip</string>
@@ -82,4 +83,24 @@
     <string name="view_report">View Report</string>
     <string name="select_strip_type">Select Strip Type</string>
     <string name="simple_process">Simple Process!</string>
+    <string name="choose_sign_in_method">Choose how you\'d like to continue</string>
+    <string name="continue_with_phone">Continue with Phone</string>
+    <string name="continue_with_email">Continue with Email</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="prompt_create_account">Don\'t have an account? Sign Up</string>
+    <string name="prompt_have_account">Already have an account? Login</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="analysis_image_open_failed">Couldn’t open the photo. Please take another photo or select a different image.</string>
+    <string name="analysis_card_not_found">Couldn’t identify the test card. Take another photo with the whole card and all four corner markers clearly visible.</string>
+    <string name="analysis_card_alignment_failed">Couldn’t align the card image for analysis. Place the card flat and take another photo with the camera directly above it.</string>
+    <string name="analysis_strip_processing_failed">The app couldn’t process the test strip image. Please try again. If this continues, close and reopen the app.</string>
+    <string name="analysis_too_few_pads">Couldn’t detect enough test pads. Found %1$d of %2$d colored pads. Make sure the entire strip is visible and in focus, then take another photo.</string>
+    <string name="analysis_unexpected_error">Analysis stopped because of an unexpected error. Please try again. If this continues, close and reopen the app.</string>
+    <string name="scan_qr_not_found">Couldn’t read the card’s QR code. Make sure the QR code is fully visible and in focus, then take another photo.</string>
+    <string name="scan_image_prepare_failed">Couldn’t prepare the photo for analysis. Please take another photo or select a different image.</string>
+    <string name="scan_image_save_failed">Couldn’t save the photo for analysis. Please try taking the photo again.</string>
+    <string name="scan_capture_failed">Couldn’t take the photo. Please try again.</string>
 </resources>

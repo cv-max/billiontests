@@ -52,7 +52,12 @@
         android:id="@+id/testGuideFragment2"
         android:name="com.billiontests.app.testguide.TestGuideFragment"
         android:label="fragment_test_guide"
-        tools:layout="@layout/fragment_test_guide" />
+        tools:layout="@layout/fragment_test_guide" >
+        <argument
+            android:name="patient"
+            app:argType="com.billiontests.app.model.Patient"
+            app:nullable="true" />
+    </fragment>
     <fragment
         android:id="@+id/aboutFragment"
         android:name="com.billiontests.app.home.ui.profile.AboutFragment"

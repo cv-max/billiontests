@@ -6,4 +6,8 @@
         <key>version</key>
         <value>""</value>
     </entry>
+    <entry>
+        <key>max_scans</key>
+        <value>5</value>
+    </entry>
 </defaultsMap>

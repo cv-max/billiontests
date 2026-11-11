@@ -10,14 +10,14 @@ plugins {
 
 android {
     namespace = "com.billiontests.app"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.billiontests.app"
         minSdk = 24
-        targetSdk = 35
-        versionCode = 6
-        versionName = "2.1.1"
+        targetSdk = 36
+        versionCode = 9
+        versionName = "2.1.8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -65,6 +65,12 @@ android {
     }
     buildFeatures {
         viewBinding = true
+    }
+
+    androidResources {
+        // OpenCV DNN reads the model from a real file, so shipping it compressed only costs us a
+        // slower first-run extraction for no APK saving (the weights are already incompressible).
+        noCompress += "onnx"
     }
 }
 

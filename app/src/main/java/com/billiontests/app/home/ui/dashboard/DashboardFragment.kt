@@ -61,7 +61,7 @@ class DashboardFragment : Fragment(), ScanResultAdapter.OnScannedItemClickListen
         fetchScanResults()
 
         binding.takeTestResultButton.setOnClickListener {
-            findNavController().navigate(DashboardFragmentDirections.actionNavigationDashboardToTestGuideFragment2())
+            findNavController().navigate(DashboardFragmentDirections.actionNavigationDashboardToTestGuideFragment2(null))
         }
 
         binding.whatsappButton.setOnClickListener {
@@ -90,7 +90,7 @@ class DashboardFragment : Fragment(), ScanResultAdapter.OnScannedItemClickListen
 
     private fun fetchScanResults() {
         lifecycleScope.launch(Dispatchers.IO) {
-            val scanResults = scanDatabase.scanResultDao().getAllScanResults()
+            val scanResults = scanDatabase.scanResultDao().getAllScanResultsDesending()
             launch(Dispatchers.Main) {
                 setupRecyclerView(scanResults)
             }

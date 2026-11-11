@@ -45,12 +45,20 @@ import com.billiontests.app.utils.getCurrentDateString
 import com.billiontests.app.utils.toUrineTestResults
 import com.billiontests.app.worker.UploadWorker
 import com.google.android.material.button.MaterialButton
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 import androidx.core.net.toUri
+import com.billiontests.app.model.Patient
+import com.billiontests.app.model.ScanMetaData
+import com.billiontests.app.utils.PATIENT_SELECTED
+import com.billiontests.app.utils.SCAN_METADATA
 import com.billiontests.app.utils.convertDateFormat
 
 class ResultActivity : AppCompatActivity(), UrineTestAdapter.OnDetailsButtonClickListener {
@@ -71,6 +79,8 @@ class ResultActivity : AppCompatActivity(), UrineTestAdapter.OnDetailsButtonClic
     private var id = ""
     private var selectedValue = "Mission"
     private var directoryPath = ""
+    private var selectedPatient: Patient? = null
+    private var scanMetaData : ScanMetaData? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,6 +105,17 @@ class ResultActivity : AppCompatActivity(), UrineTestAdapter.OnDetailsButtonClic
             intent.getParcelableExtra<ScanResult>("result")
         }
 
+        selectedPatient = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(PATIENT_SELECTED, Patient::class.java)
+        }else{
+            intent.getParcelableExtra(PATIENT_SELECTED)
+        }
+
+        scanMetaData = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(SCAN_METADATA, ScanMetaData::class.java)
+        }else{
+            intent.getParcelableExtra(SCAN_METADATA)
+        }
         //assigning existing id
         scanResult?.let {
             id = it.scanId
@@ -242,9 +263,9 @@ class ResultActivity : AppCompatActivity(), UrineTestAdapter.OnDetailsButtonClic
         val uri = if (pdfPath.isNotEmpty()) pdfPath.toUri() else generateUrineReportPdf(
             context = this,
             patient = PatientInfo(
-                name = name,
-                ageYears = age,
-                gender = gender,
+                name = selectedPatient?.name?: name,
+                ageYears = selectedPatient?.age?.toString() ?: age,
+                gender = selectedPatient?.gender ?: gender,
                 reportId = scanId,
                 collectedOn = scanResult?.date ?: getCurrentDateString(),
                 reportedOn = scanResult?.date ?: getCurrentDateString()
@@ -253,7 +274,10 @@ class ResultActivity : AppCompatActivity(), UrineTestAdapter.OnDetailsButtonClic
             fileName = "BillionTests_Urine_Report_${scanResult?.scanId}. .pdf",
             logoResId = R.mipmap.ic_launcher_round,
             isMission = selectedValue == "Mission",
-            directoryPath = directoryPath
+            directoryPath = directoryPath,
+            volume = scanMetaData?.volume ?: "",
+            colorM = scanMetaData?.color ?: "",
+            appearance = scanMetaData?.appearance ?: ""
         )
 
         if (pdfPath.isEmpty()) {
@@ -326,6 +350,10 @@ class ResultActivity : AppCompatActivity(), UrineTestAdapter.OnDetailsButtonClic
             false,
             false,
             false,
+            patient = selectedPatient!!,
+            volume = scanMetaData?.volume ?: "",
+            colorM = scanMetaData?.color ?: "",
+            appearance = scanMetaData?.appearance ?: ""
         )
 
         val name = PreferenceUtils.getString(this, PreferenceUtils.USER_NAME, "")
@@ -335,9 +363,9 @@ class ResultActivity : AppCompatActivity(), UrineTestAdapter.OnDetailsButtonClic
         val uri = generateUrineReportPdf(
             context = this,
             patient = PatientInfo(
-                name = name,
-                ageYears = age,
-                gender = gender,
+                name = selectedPatient?.name?: name,
+                ageYears = selectedPatient?.age?.toString() ?: age,
+                gender = selectedPatient?.gender ?: gender,
                 reportId = scanId,
                 collectedOn = scanResult?.date ?: getCurrentDateString(),
                 reportedOn = scanResult?.date ?: getCurrentDateString()
@@ -346,7 +374,10 @@ class ResultActivity : AppCompatActivity(), UrineTestAdapter.OnDetailsButtonClic
             fileName = "BillionTests_Urine_Report_$scanId.pdf",
             logoResId = R.mipmap.ic_launcher_round,
             isMission = selectedValue == "Mission",
-            directoryPath = directoryPath
+            directoryPath = directoryPath,
+            volume = scanMetaData?.volume ?: "",
+            colorM = scanMetaData?.color ?: "",
+            appearance = scanMetaData?.appearance ?: ""
         )
         scanResult?.pdfPath = uri.toString()
         scanResult?.let {
@@ -361,6 +392,7 @@ class ResultActivity : AppCompatActivity(), UrineTestAdapter.OnDetailsButtonClic
             if (isCorrect.not()) {
                 startUploadWork(imagePath, "Failed to get Result from cv server", null)
             } else {
+                incrementScanCount()
                 startUploadWork(imagePath, "Success", scanResult)
             }
         }
@@ -397,6 +429,10 @@ class ResultActivity : AppCompatActivity(), UrineTestAdapter.OnDetailsButtonClic
             false,
             false,
             true,
+            patient = selectedPatient!!,
+            volume = scanMetaData?.volume ?: "",
+            colorM = scanMetaData?.color ?: "",
+            appearance = scanMetaData?.appearance ?: ""
         )
         val name = PreferenceUtils.getString(this, PreferenceUtils.USER_NAME, "")
         val age = PreferenceUtils.getString(this, PreferenceUtils.AGE, "")
@@ -405,9 +441,9 @@ class ResultActivity : AppCompatActivity(), UrineTestAdapter.OnDetailsButtonClic
         val uri = generateUrineReportPdf(
             context = this,
             patient = PatientInfo(
-                name = name,
-                ageYears = age,
-                gender = gender,
+                name = selectedPatient?.name?: name,
+                ageYears = selectedPatient?.age?.toString() ?: age,
+                gender = selectedPatient?.gender ?: gender,
                 reportId = scanId,
                 collectedOn = scanResult?.date ?: getCurrentDateString(),
                 reportedOn = scanResult?.date ?: getCurrentDateString()
@@ -416,7 +452,10 @@ class ResultActivity : AppCompatActivity(), UrineTestAdapter.OnDetailsButtonClic
             fileName = "BillionTests_Urine_Report_$scanId.pdf",
             logoResId = R.mipmap.ic_launcher_round,
             isMission = selectedValue == "Mission",
-            directoryPath = directoryPath
+            directoryPath = directoryPath,
+            volume = scanMetaData?.volume ?: "",
+            colorM = scanMetaData?.color ?: "",
+            appearance = scanMetaData?.appearance ?: ""
         )
         scanResult?.pdfPath = uri.toString()
         scanResult?.let {
@@ -431,9 +470,20 @@ class ResultActivity : AppCompatActivity(), UrineTestAdapter.OnDetailsButtonClic
             if (isCorrect.not()) {
                 startUploadWork(imagePath, "Failed to get Result from cv server", null)
             } else {
+                incrementScanCount()
                 startUploadWork(imagePath, "Success", scanResult)
             }
         }
+    }
+
+    // Atomically bump the per-user lifetime scan counter used for the scan limit.
+    // Uses set(merge) + increment so it works even if the field/doc doesn't exist yet,
+    // and never touches other user fields. Failures are logged only (best-effort).
+    private fun incrementScanCount() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        FirebaseFirestore.getInstance().collection("users").document(uid)
+            .set(mapOf("scanCount" to FieldValue.increment(1)), SetOptions.merge())
+            .addOnFailureListener { e -> Log.e(TAG, "Failed to increment scanCount", e) }
     }
 
     private fun startUploadWork(imageUri: String, reason: String, scanResult: ScanResult?) {

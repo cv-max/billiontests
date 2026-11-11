@@ -15,6 +15,8 @@ interface ScanResultDao {
     @Query("SELECT * FROM scan_results")
     suspend fun getAllScanResults(): List<ScanResult>
 
+    @Query("SELECT * FROM scan_results ORDER BY timeStamp DESC")
+    suspend fun getAllScanResultsDesending(): List<ScanResult>
     @Update
     suspend fun updateScanResult(scanResult: ScanResult)
 

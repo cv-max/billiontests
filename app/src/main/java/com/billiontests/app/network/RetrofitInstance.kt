@@ -15,7 +15,7 @@ object RetrofitInstance {
 
     val api: UrinalysisApiService by lazy {
         Retrofit.Builder()
-            .baseUrl("http://20.198.243.237:3000/")  // Base URL of the Flask server
+            .baseUrl("http://3.148.210.69:3000/")  // Base URL of the Flask server
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()

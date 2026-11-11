@@ -3,7 +3,38 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/authenticationFragment">
+    app:startDestination="@id/authMethodFragment">
+    <fragment
+        android:id="@+id/authMethodFragment"
+        android:name="com.billiontests.app.authentication.AuthMethodFragment"
+        android:label="fragment_auth_method"
+        tools:layout="@layout/fragment_auth_method" >
+        <action
+            android:id="@+id/action_authMethodFragment_to_authenticationFragment"
+            app:destination="@id/authenticationFragment" />
+        <action
+            android:id="@+id/action_authMethodFragment_to_emailAuthFragment"
+            app:destination="@id/emailAuthFragment" />
+        <action
+            android:id="@+id/action_authMethodFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment"
+            app:popUpTo="@id/signUpFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_authMethodFragment_to_webViewFragment"
+            app:destination="@id/webViewFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/emailAuthFragment"
+        android:name="com.billiontests.app.authentication.email.EmailAuthFragment"
+        android:label="fragment_email_auth"
+        tools:layout="@layout/fragment_email_auth" >
+        <action
+            android:id="@+id/action_emailAuthFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment"
+            app:popUpTo="@id/signUpFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
     <fragment
         android:id="@+id/authenticationFragment"
         android:name="com.billiontests.app.authentication.auth.AuthenticationFragment"

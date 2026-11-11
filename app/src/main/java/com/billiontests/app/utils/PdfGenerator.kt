@@ -33,7 +33,10 @@ fun generateUrineReportPdf(
     @DrawableRes logoResId: Int? = null,            // <- pass your logo drawable here (e.g., R.drawable.ic_billiontests)
     topMarginBeforeNamePx: Float = 12f,
     isMission: Boolean,// <- extra space before "Name:"
-    directoryPath: String
+    directoryPath: String,
+    volume: String,
+    colorM: String,
+    appearance: String,
 ): Uri {
     val pageWidth = 595
     val pageHeight = 842
@@ -266,6 +269,55 @@ fun generateUrineReportPdf(
             findRes("Blood")?.result ?: "-",
             findRes("Blood")?.normalRange ?: "Negative"
         )
+    }
+
+    val hasMetaData = volume.isNotBlank() || colorM.isNotBlank() || appearance.isNotBlank()
+
+    if (hasMetaData) {
+        y += 20f
+
+        text.color = titleGray
+        text.typeface = Typeface.create(Typeface.DEFAULT_BOLD, Typeface.BOLD)
+        text.textSize = 13f
+        canvas.drawText("Physical Examination", margin.toFloat(), y, text)
+        y += 10f
+
+        val metaColX = floatArrayOf(
+            margin.toFloat(),
+            (margin + 260).toFloat(),
+            (pageWidth - margin).toFloat()
+        )
+
+        paint.color = lightGray
+        canvas.drawRect(metaColX[0], y, metaColX[2], y + rowHeight, paint)
+
+        text.color = textDark
+        text.typeface = Typeface.DEFAULT_BOLD
+        text.textSize = 11f
+        canvas.drawText("Parameter", metaColX[0] + 8f, y + 15f, text)
+        canvas.drawText("Value", metaColX[1] + 8f, y + 15f, text)
+        y += rowHeight
+
+        text.typeface = Typeface.DEFAULT
+        text.textSize = 11f
+        paint.color = lineGray
+        paint.strokeWidth = 1f
+
+        fun drawMetaRow(label: String, value: String) {
+            if (value.isBlank()) return
+
+            canvas.drawLine(metaColX[0], y + rowHeight, metaColX[2], y + rowHeight, paint)
+
+            text.color = textDark
+            canvas.drawText(label, metaColX[0] + 8f, y + 15f, text)
+            canvas.drawText(value, metaColX[1] + 8f, y + 15f, text)
+
+            y += rowHeight
+        }
+
+        drawMetaRow("Volume", volume)
+        drawMetaRow("Color", colorM)
+        drawMetaRow("Appearance", appearance)
     }
 
     y += 20f

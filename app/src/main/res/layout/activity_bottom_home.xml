@@ -2,16 +2,15 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/container"
-    android:background="@color/grey"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
+    android:background="@color/grey">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/frag_wrapper"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="?attr/actionBarSize">
+        >
 
         <fragment
             android:id="@+id/nav_host_fragment_activity_bottom_home"
@@ -33,18 +32,16 @@
         app:fabAlignmentMode="center"
         app:fabAnchorMode="cradle"
         app:fabAnimationMode="slide"
-        app:fabCradleMargin="4dp"
-        app:fabCradleRoundedCornerRadius="10dp"
-        app:fabCradleVerticalOffset="10dp">
+        >
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/nav_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
+            app:elevation="0dp"
             app:itemIconTint="?attr/colorOnSurface"
             app:itemTextColor="?attr/colorOnSurface"
-            app:elevation="0dp"
             app:menu="@menu/bottom_nav_menu" />
 
     </com.google.android.material.bottomappbar.BottomAppBar>

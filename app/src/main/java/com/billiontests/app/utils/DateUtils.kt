@@ -3,6 +3,7 @@ package com.billiontests.app.utils
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 fun convertDateFormat(dateString: String, outputFormat: String): String {
     return try {
@@ -18,4 +19,15 @@ fun convertDateFormat(dateString: String, outputFormat: String): String {
 fun getCurrentDateString(format:String = "dd-MM-yyyy hh:mm a"): String {
     val dateFormat = SimpleDateFormat(format, Locale.getDefault())
     return dateFormat.format(Date())
+}
+
+fun formatTimestamp(
+    timestamp: Long,
+    pattern: String,
+    locale: Locale = Locale.getDefault(),
+    timeZone: TimeZone = TimeZone.getDefault()
+): String {
+    val formatter = SimpleDateFormat(pattern, locale)
+    formatter.timeZone = timeZone
+    return formatter.format(Date(timestamp))
 }

@@ -4,7 +4,6 @@ package com.billiontests.app.scan
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -21,7 +20,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
 import android.util.Size
@@ -51,7 +49,11 @@ import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.TransformExperimental
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.exifinterface.media.ExifInterface
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -63,11 +65,20 @@ import com.billiontests.app.R
 import com.billiontests.app.databinding.ActivityCameraXactivityBinding
 import com.billiontests.app.model.HorizontalRegion
 import com.billiontests.app.model.ImageAnalysisResponse
+import com.billiontests.app.model.MissionAnalysisResponse
+import com.billiontests.app.model.Patient
 import com.billiontests.app.model.QrRegion
+import com.billiontests.app.model.ScanMetaData
 import com.billiontests.app.model.VerticalRegion
 import com.billiontests.app.network.NetworkConnectionLiveData
 import com.billiontests.app.utils.CameraInfo
+import com.billiontests.app.utils.LogcatToFile
+import com.billiontests.app.utils.MISSION_RESPONSE
+import com.billiontests.app.utils.PATIENT_SELECTED
+import com.billiontests.app.utils.PreferenceUtils
 import com.billiontests.app.utils.RealPathUtils
+import com.billiontests.app.utils.SCAN_METADATA
+import com.billiontests.app.utils.SELECTED_VALUE
 import com.billiontests.app.utils.extractPoints
 import com.billiontests.app.utils.getCurrentDateString
 import com.billiontests.app.utils.getNV21
@@ -79,9 +90,12 @@ import com.king.wechat.qrcode.WeChatQRCodeDetector
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.billiontests.app.analysis.CardGeometry
 import org.opencv.OpenCV
+import org.opencv.android.Utils
 import org.opencv.core.Mat
 import org.opencv.core.Point
+import org.opencv.imgproc.Imgproc
 import java.io.BufferedOutputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -92,17 +106,6 @@ import java.util.Locale
 import java.util.Objects
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import kotlin.collections.isNotEmpty
-import kotlin.math.roundToInt
-import androidx.core.content.edit
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
-import com.billiontests.app.model.MissionAnalysisResponse
-import com.billiontests.app.utils.LogcatToFile
-import com.billiontests.app.utils.MISSION_RESPONSE
-import com.billiontests.app.utils.PreferenceUtils
-import com.billiontests.app.utils.SELECTED_VALUE
 
 
 class CameraXActivity : AppCompatActivity()
@@ -180,6 +183,8 @@ class CameraXActivity : AppCompatActivity()
 
     private var selectedValue = "Mission"
 
+    private var selectedPatient: Patient? = null
+    private var scanMetaData: ScanMetaData? = null
 
     companion object {
         private const val TAG = "CameraXActivity"
@@ -191,19 +196,20 @@ class CameraXActivity : AppCompatActivity()
     }
 
     private var allowCapture = true
+    private var capturingImage = false
 
+    private var qrAtBottom = false
     private var allowDistanceCapture = true
+    private var allMarkersDetected = false
 
     private lateinit var binding: ActivityCameraXactivityBinding
 
     private var alertDialog: AlertDialog? = null
     private lateinit var customLayout: View
 
-    private var imageRetryCount = 0
-
     private lateinit var networkConnectionLiveData: NetworkConnectionLiveData
 
-    private var isInternetAvailable = false
+//    private var isInternetAvailable = false
 
     private lateinit var imagePickerLauncher: ActivityResultLauncher<String>
 
@@ -230,7 +236,8 @@ class CameraXActivity : AppCompatActivity()
                     Toast.LENGTH_SHORT
                 ).show()
             } else {
-                startCamera()
+//                startCamera()
+                showScanMetaDataDialogBeforeStartCamera()
             }
         }
 
@@ -238,17 +245,6 @@ class CameraXActivity : AppCompatActivity()
         getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
     }
 
-    private fun vibratePhone() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // For Android O and above
-            vibrator.vibrate(VibrationEffect.createOneShot(200, 100))
-        } else {
-            // For older versions
-            vibrator.vibrate(200)
-        }
-    }
-
-    private lateinit var sharedPreferences: SharedPreferences
 
     @OptIn(ExperimentalGetImage::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -271,6 +267,11 @@ class CameraXActivity : AppCompatActivity()
         setContentView(binding.root)
 
         selectedValue = intent.getStringExtra(SELECTED_VALUE) ?: "Mission"
+        selectedPatient = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(PATIENT_SELECTED, Patient::class.java)
+        } else {
+            intent.getParcelableExtra(PATIENT_SELECTED)
+        }
 
         networkConnectionLiveData = NetworkConnectionLiveData(this)
 
@@ -283,11 +284,8 @@ class CameraXActivity : AppCompatActivity()
             Locale.US
         ).format(System.currentTimeMillis())
 
-        PreferenceUtils.putString(this, PreferenceUtils.LAST_FOLDER_NAME,folderName)
+        PreferenceUtils.putString(this, PreferenceUtils.LAST_FOLDER_NAME, folderName)
         LogcatToFile.startLogging(file.absolutePath)
-//        sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
-//        val editor = sharedPreferences.edit()
-
 
         cameraManager = getSystemService(CAMERA_SERVICE) as CameraManager
         getSupportedResulutions()
@@ -313,12 +311,23 @@ class CameraXActivity : AppCompatActivity()
         vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
         binding.captureButton.setOnClickListener {
+            if (!allMarkersDetected) {
+                Toast.makeText(
+                    this,
+                    "Align the card so all 4 corner markers are visible",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
             binding.captureButton.isEnabled = false
+            binding.captureButton.text = "Please wait"
+            capturingImage = true
             takePhoto()
         }
 
         if (allPermissionsGranted()) {
-            startCamera()
+//            startCamera()
+            showScanMetaDataDialogBeforeStartCamera()
         } else {
             requestPermissions()
         }
@@ -370,13 +379,12 @@ class CameraXActivity : AppCompatActivity()
                                         binding.captureButton.text = "Capture"
                                         binding.detectProgressView.isVisible = false
                                         createCustomDialog(
-                                            "Failed to detect Qr. Try again.",
+                                            getString(R.string.scan_qr_not_found),
                                             null,
                                             "Capture",
                                             "Cancel"
                                         )
-                                    }
-                                    else {
+                                    } else {
                                         closeCamera()
                                         points.forEach { mat ->
                                             // Scan result points (rectangle of QR code)
@@ -419,7 +427,7 @@ class CameraXActivity : AppCompatActivity()
                                                 binding.captureButton.text = "Capture"
                                                 binding.detectProgressView.isVisible = false
                                                 createCustomDialog(
-                                                    "Failed to Detect Strip. Try again.",
+                                                    getString(R.string.scan_image_save_failed),
                                                     null,
                                                     "Capture",
                                                     "Cancel"
@@ -434,7 +442,7 @@ class CameraXActivity : AppCompatActivity()
                                         binding.captureButton.text = "Capture"
                                         binding.detectProgressView.isVisible = false
                                         createCustomDialog(
-                                            "Failed to detect Qr. Try again.",
+                                            getString(R.string.scan_qr_not_found),
                                             null,
                                             "Capture",
                                             "Cancel"
@@ -448,7 +456,7 @@ class CameraXActivity : AppCompatActivity()
                     } ?: let {
                         Log.e(TAG, "image bitmap is null")
                         createCustomDialog(
-                            "Failed create image bitmap. Try again.",
+                            getString(R.string.scan_image_prepare_failed),
                             null,
                             "Capture",
                             "Cancel"
@@ -502,7 +510,7 @@ class CameraXActivity : AppCompatActivity()
                         binding.detectProgressView.isVisible = false
 //                      startCamera()
                         createCustomDialog(
-                            "Failed to get Test Result. Try again.",
+                            getString(R.string.analysis_unexpected_error),
                             null,
                             "Try Again",
                             "Cancel"
@@ -517,12 +525,12 @@ class CameraXActivity : AppCompatActivity()
                         binding.captureButton.text = "Capture"
                         binding.detectProgressView.isVisible = false
                         createCustomDialog(
-                            "Failed to get Test Result. Try again.",
+                            (throwable as? LocalAnalysisException)?.message
+                                ?: getString(R.string.analysis_unexpected_error),
                             null,
                             "Try Again",
                             "Cancel"
                         )
-//                        startCamera()
                     }
                 }
 
@@ -534,19 +542,15 @@ class CameraXActivity : AppCompatActivity()
                 Log.e(TIMER_TAG, "result received")
                 urinalysisResponse.onSuccess { response ->
                     response?.let {
-//                        val colorValues = response.colorValues
-//                        for (color in colorValues) {
-//                            Log.d("UrinalysisActivity", "Color: $color")
+
                         saveAnalysisMissionResultToAppDir(response)
                         goToResult(previewPahth, null, it)
-//                        }
                     } ?: runOnUiThread {
                         binding.captureButton.isEnabled = true
                         binding.captureButton.text = "Capture"
                         binding.detectProgressView.isVisible = false
-//                      startCamera()
                         createCustomDialog(
-                            "Failed to get Test Result. Try again.",
+                            getString(R.string.analysis_unexpected_error),
                             null,
                             "Try Again",
                             "Cancel"
@@ -561,7 +565,8 @@ class CameraXActivity : AppCompatActivity()
                         binding.captureButton.text = "Capture"
                         binding.detectProgressView.isVisible = false
                         createCustomDialog(
-                            "Failed to get Test Result. Try again.",
+                            (throwable as? LocalAnalysisException)?.message
+                                ?: getString(R.string.analysis_unexpected_error),
                             null,
                             "Try Again",
                             "Cancel"
@@ -588,19 +593,22 @@ class CameraXActivity : AppCompatActivity()
     }
 
     fun saveAnalysisResultToAppDir(response: Throwable) {
-        // Convert the object to JSON string
-        val jsonString = Gson().toJson(response)
-
-        // Get the output directory
-        val dir = outputAppDirectory
-
-        // Create a .txt file (you can use timestamp to make each file unique)
-        val file = File(dir, "analysis_failed_result_${System.currentTimeMillis()}.txt")
-
-        // Write JSON into file
-        file.writeText(jsonString)
-
-        println("Saved JSON file at: ${file.absolutePath}")
+        // Serialize plain strings, not Throwable internals accessed through reflection.
+        // Saving diagnostics must never prevent the failure dialog from opening.
+        runCatching {
+            val jsonString = Gson().toJson(
+                mapOf(
+                    "message" to response.message.orEmpty(),
+                    "type" to response.javaClass.name,
+                    "stackTrace" to Log.getStackTraceString(response)
+                )
+            )
+            val file = File(outputAppDirectory, "analysis_failed_result_${System.currentTimeMillis()}.txt")
+            file.writeText(jsonString)
+            Log.d(TAG, "Saved analysis failure at: ${file.absolutePath}")
+        }.onFailure { error ->
+            Log.e(TAG, "Could not save analysis failure details", error)
+        }
     }
 
 
@@ -639,13 +647,13 @@ class CameraXActivity : AppCompatActivity()
 
     override fun onResume() {
         super.onResume()
-        networkConnectionLiveData.observe(this, Observer { isConnected ->
-            Log.e("Internet", "is internet available: $isConnected")
-            isInternetAvailable = isConnected
-            if (isConnected.not()) {
-                showNoInternetDialog()
-            }
-        })
+//        networkConnectionLiveData.observe(this, Observer { isConnected ->
+//            Log.e("Internet", "is internet available: $isConnected")
+//            isInternetAvailable = isConnected
+//            if (isConnected.not()) {
+//                showNoInternetDialog()
+//            }
+//        })
     }
 
     override fun onDestroy() {
@@ -986,6 +994,52 @@ class CameraXActivity : AppCompatActivity()
         else -> "img"
     }
 
+    @OptIn(ExperimentalGetImage::class)
+    private fun showScanMetaDataDialogBeforeStartCamera() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_scan_metadata, null)
+
+        val volumeEt =
+            dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.volumeEt)
+        val colorEt =
+            dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.colorEt)
+        val appearanceEt =
+            dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.appearanceEt)
+
+        val skipButton =
+            dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.skipButton)
+        val addButton =
+            dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.addButton)
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        skipButton.setOnClickListener {
+            scanMetaData = null
+            dialog.dismiss()
+            startCamera()
+        }
+
+        addButton.setOnClickListener {
+            val volume = volumeEt.text.toString().trim()
+            val color = colorEt.text.toString().trim()
+            val appearance = appearanceEt.text.toString().trim()
+
+            scanMetaData = ScanMetaData(
+                volume = volume,
+                color = color,
+                appearance = appearance
+            )
+
+            Log.d(TAG, "Scan metadata: $scanMetaData")
+            dialog.dismiss()
+            startCamera()
+        }
+
+        dialog.show()
+    }
+
     @OptIn(TransformExperimental::class)
     @ExperimentalGetImage
     private fun startCamera() {
@@ -1056,7 +1110,15 @@ class CameraXActivity : AppCompatActivity()
                     val height = it.height
                     val bitmap = imageProxyToBitmap(nv21, width, height)
 
+                    if(capturingImage){
+                        Log.e(TAG,"capturing image...")
+                        return@let
+                    }
                     if (bitmap != null) {
+
+                        // All 4 ArUco markers must be in frame or the captured image cannot be
+                        // rectified (see UrinalysisAnalyzer). Gate capture on this per frame.
+                        allMarkersDetected = detectArucoCount(bitmap) == 4
 
                         try {
                             val results = WeChatQRCodeDetector.detectAndDecode(bitmap, points)
@@ -1070,7 +1132,6 @@ class CameraXActivity : AppCompatActivity()
 //
 //                                }
                                 if (results.isNullOrEmpty().not()) {
-
 
                                     Log.e(TAG, "QR code detected")
                                     for (i in results.indices) {
@@ -1088,11 +1149,6 @@ class CameraXActivity : AppCompatActivity()
                                             "Wechat WidthPx = $qrWidthPx, HeightPx = $qrHeightPx"
                                         )
 
-//                                        calculateDistance(
-//                                            qrWidthPx.roundToInt().plus(2),
-//                                            camerasInfoList
-//                                        )
-
                                         Log.e(TAG, "corners : $corners")
                                         val region = classifyQrPosition(
                                             corners,
@@ -1105,22 +1161,25 @@ class CameraXActivity : AppCompatActivity()
                                             "QR '$qrText' is at ${region.vertical} - ${region.horizontal}"
                                         )
                                         allowCapture =
-                                            region.vertical == VerticalRegion.BOTTOM && region.horizontal == HorizontalRegion.CENTER
+                                            (region.vertical == VerticalRegion.BOTTOM && region.horizontal == HorizontalRegion.CENTER) ||
+                                                    (region.vertical == VerticalRegion.TOP && region.horizontal == HorizontalRegion.CENTER)
+
+                                        qrAtBottom = region.vertical == VerticalRegion.BOTTOM
                                     }
                                 } else {
                                     Log.e(TAG, "QR code not detected")
                                     binding.distanceTv.text = " "
                                 }
 
+                                binding.captureHeaderTv.text = if (!allMarkersDetected) {
+                                    "Align the card so all 4 corner markers are visible"
+                                } else {
+                                    getString(R.string.capture_test_card_instruction)
+                                }
+
                                 binding.captureButton.isVisible =
                                     results.isNullOrEmpty()
-                                        .not() && isInternetAvailable && allowCapture && allowDistanceCapture
-
-                                binding.captureHeaderTv.text =
-                                    if (allowCapture.not()) "Light Condition isn't good.\nPlace the BT Card in appropriate location" else ContextCompat.getString(
-                                        this,
-                                        R.string.capture_test_card_instruction
-                                    )
+                                        .not() && allowDistanceCapture && allMarkersDetected
 
                             }
                         } catch (e: RuntimeException) {
@@ -1158,6 +1217,23 @@ class CameraXActivity : AppCompatActivity()
 
         }, ContextCompat.getMainExecutor(this))
 
+    }
+
+    /** Number of ArUco markers visible in [bitmap] (0..4). Used to gate capture. */
+    private fun detectArucoCount(bitmap: Bitmap): Int {
+        val rgba = Mat()
+        val gray = Mat()
+        return try {
+            Utils.bitmapToMat(bitmap, rgba)
+            Imgproc.cvtColor(rgba, gray, Imgproc.COLOR_RGBA2GRAY)
+            CardGeometry.markerCenters(gray).size
+        } catch (e: Exception) {
+            Log.e(TAG, "aruco detect failed: ${e.message}")
+            0
+        } finally {
+            rgba.release()
+            gray.release()
+        }
     }
 
     fun qrSizeFromCorners(corners: List<Point>): Pair<Double, Double> {
@@ -1259,6 +1335,8 @@ class CameraXActivity : AppCompatActivity()
                 )
                 .putExtra("addToDb", true)
                 .putExtra(SELECTED_VALUE, selectedValue)
+                .putExtra(PATIENT_SELECTED, selectedPatient)
+                .putExtra(SCAN_METADATA, scanMetaData)
         )
         finish()
     }
@@ -1295,25 +1373,24 @@ class CameraXActivity : AppCompatActivity()
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
                     Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
-                    Toast.makeText(applicationContext, "Capture Failed", Toast.LENGTH_SHORT).show()
+                    capturingImage = false
+                    createCustomDialog(getString(R.string.scan_capture_failed), null, "Try Again", "Cancel")
                 }
-
-
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri = output.savedUri
-
                     capturedImagePath =
-                        savedUri?.let { RealPathUtils.getRealPath(this@CameraXActivity, it) }?:""
+                        savedUri?.let { RealPathUtils.getRealPath(this@CameraXActivity, it) } ?: ""
                     val msg = "Photo capture succeeded: $capturedImagePath"
                     Log.e(TAG, msg)
-                    if(capturedImagePath.isNotEmpty()) {
+                    if (capturedImagePath.isNotEmpty()) {
                         val imgBitmap = createBitmapFromPath(capturedImagePath)
                         imgBitmap?.let {
                             runOnUiThread {
                                 binding.captureButton.isEnabled = false
                                 binding.captureButton.setText("Please wait")
                                 binding.detectProgressView.isVisible = true
+                                capturingImage = false
                                 closeCamera()
                             }
                             Log.e(TIMER_TAG, "onImageSaved: ${System.currentTimeMillis()}")
@@ -1347,7 +1424,7 @@ class CameraXActivity : AppCompatActivity()
                                             binding.captureButton.text = "Capture"
                                             binding.detectProgressView.isVisible = false
                                             createCustomDialog(
-                                                "Failed to detect Qr. Try again.",
+                                                getString(R.string.scan_qr_not_found),
                                                 null,
                                                 "Capture",
                                                 "Cancel"
@@ -1389,7 +1466,7 @@ class CameraXActivity : AppCompatActivity()
 
 //                                        val imagePath = saveBitmapToFile(imgBitmap)
                                             val rotate =
-                                                if (imgBitmap.width > imgBitmap.height) 270f else 180f
+                                                if (imgBitmap.width > imgBitmap.height) 270f else if (qrAtBottom) 180f else 0f
                                             val imagePath = saveBitmapFast(
                                                 bitmap = imgBitmap,
                                                 outputDir = outputAppDirectory,
@@ -1407,7 +1484,7 @@ class CameraXActivity : AppCompatActivity()
                                                     binding.captureButton.text = "Capture"
                                                     binding.detectProgressView.isVisible = false
                                                     createCustomDialog(
-                                                        "Failed to Detect Strip. Try again.",
+                                                        getString(R.string.scan_image_save_failed),
                                                         null,
                                                         "Capture",
                                                         "Cancel"
@@ -1422,7 +1499,7 @@ class CameraXActivity : AppCompatActivity()
                                             binding.captureButton.text = "Capture"
                                             binding.detectProgressView.isVisible = false
                                             createCustomDialog(
-                                                "Failed to detect Qr. Try again.",
+                                                getString(R.string.scan_qr_not_found),
                                                 null,
                                                 "Capture",
                                                 "Cancel"
@@ -1437,7 +1514,7 @@ class CameraXActivity : AppCompatActivity()
                             Log.e(TAG, "image bitmap is null")
                             runOnUiThread {
                                 createCustomDialog(
-                                    "Failed create image bitmap. Try again.",
+                                    getString(R.string.scan_image_prepare_failed),
                                     null,
                                     "Capture",
                                     "Cancel"
@@ -1445,10 +1522,11 @@ class CameraXActivity : AppCompatActivity()
                             }
 
                         }
-                    }else{
+                    } else {
                         runOnUiThread {
+                            capturingImage = false
                             createCustomDialog(
-                                "Failed create image bitmap. Try again.",
+                                getString(R.string.scan_image_prepare_failed),
                                 null,
                                 "Capture",
                                 "Cancel"
@@ -1574,7 +1652,7 @@ class CameraXActivity : AppCompatActivity()
                 // Close the camera preview
                 closeCamera()
                 // Show a dialog
-                if (isFinishing.not() && isInternetAvailable) {
+                if (isFinishing.not()) {
                     showRescanQuitDialog()
                 }
             }
@@ -1629,6 +1707,7 @@ class CameraXActivity : AppCompatActivity()
         val cancelButton = customLayout.findViewById<MaterialButton>(R.id.cancel_button)
 
         // Set the title
+        Log.e(TAG, "Showing error dialog: $title")
         titleView.text = title
 
         // Set the description or hide it if it's empty
@@ -1649,6 +1728,9 @@ class CameraXActivity : AppCompatActivity()
             alertDialog?.dismiss() // Dismiss the dialog when OK is clicked
             alertDialog = null
             runOnUiThread {
+                binding.captureButton.visibility = View.VISIBLE
+                binding.captureButton.isEnabled = true
+                binding.captureButton.text = "Capture"
                 startCamera()
             }
         }
